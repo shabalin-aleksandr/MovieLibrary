@@ -21,6 +21,13 @@ struct Configuration {
         }
         return baseURL
     }
+    
+    static var imageURL: String {
+        guard let imageURL = getValue(forKey: "imageURL") else {
+            fatalError("imageURL not found in Config.plist")
+        }
+        return imageURL
+    }
 
     private static func getValue(forKey key: String) -> String? {
         guard let path = Bundle.main.path(forResource: "Config", ofType: "plist"),
