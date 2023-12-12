@@ -28,6 +28,20 @@ struct Configuration {
         }
         return imageURL
     }
+    
+    static var YouTube_API_KEY: String {
+        guard let youTubeApiKey = getValue(forKey: "YouTube_API_KEY") else {
+            fatalError("YouTube_API_KEY not found in Config.plist")
+        }
+        return youTubeApiKey
+    }
+    
+    static var YouTubeBaseURL: String {
+        guard let youTubeBaseURL = getValue(forKey: "YouTubeBaseURL") else {
+            fatalError("YouTubeBaseURL not found in Config.plist")
+        }
+        return youTubeBaseURL
+    }
 
     private static func getValue(forKey key: String) -> String? {
         guard let path = Bundle.main.path(forResource: "Config", ofType: "plist"),
