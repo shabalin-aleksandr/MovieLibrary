@@ -29,6 +29,8 @@ class UpcomingViewController: UIViewController {
         upcomingTable.delegate = self
         upcomingTable.dataSource = self
         
+        navigationController?.navigationBar.tintColor = .white
+        
         fetchUpcoming()
     }
     
@@ -68,5 +70,26 @@ extension UpcomingViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 140
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        let title = titles[indexPath.row]
+        
+        guard let titleName = title.original_title ?? title.original_name else { return }
+        
+        APICaller.shared.getMovie(with: titleName) { [weak self] result in
+            switch result {
+            case .success(let videoElement):
+                DispatchQueue.main.async {
+                    let titlePreview = TitlePreviewViewController()
+                    titlePreview.configure(with: TitlePreviewViewModel(title: titleName, youTubeView: videoElement, titleOverview: title.overview ?? ""))
+                    self?.navigationController?.pushViewController(titlePreview, animated: true)
+                }
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
     }
 }
