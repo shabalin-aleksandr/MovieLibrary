@@ -52,7 +52,6 @@ class DownloadsViewController: UIViewController {
             case .success(let titles):
                 self?.titles = titles
                 DispatchQueue.main.async {
-                    // Hide the label if there are titles, show the table if there are titles
                     self?.noDownloadsLabel.isHidden = !titles.isEmpty
                     self?.downloadedTable.isHidden = titles.isEmpty
                     self?.downloadedTable.reloadData()
@@ -63,7 +62,6 @@ class DownloadsViewController: UIViewController {
         }
     }
 
-    
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -119,9 +117,10 @@ extension DownloadsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let title = titles[indexPath.row]
+        let titleItem = titles[indexPath.row]
+        let title = titleItem.toTitle()  // Convert TitleItem to Title
         
-        guard let titleName = title.original_title ?? title.original_name else {
+        guard let titleName = titleItem.original_title ?? titleItem.original_name else {
             return
         }
         
@@ -130,7 +129,7 @@ extension DownloadsViewController: UITableViewDelegate, UITableViewDataSource {
             case .success(let videoElement):
                 DispatchQueue.main.async {
                     let vc = TitlePreviewViewController()
-                    vc.configure(with: TitlePreviewViewModel(title: titleName, youTubeView: videoElement, titleOverview: title.overview ?? ""))
+                    vc.configure(with: TitlePreviewViewModel(title: titleName, youTubeView: videoElement, titleOverview: titleItem.overview ?? ""), title: title)
                     self?.navigationController?.pushViewController(vc, animated: true)
                 }
             case .failure(let error):

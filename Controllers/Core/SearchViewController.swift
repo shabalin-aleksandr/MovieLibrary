@@ -93,17 +93,16 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
         let title = titles[indexPath.row]
-        
         guard let titleName = title.original_title ?? title.original_name else { return }
         
-        APICaller.shared.getMovie(with: titleName) { [weak self] result in
+        APICaller.shared.getMovie(with: titleName + " trailer") { [weak self] result in
             switch result {
             case .success(let videoElement):
                 DispatchQueue.main.async {
                     let titlePreview = TitlePreviewViewController()
-                    titlePreview.configure(with: TitlePreviewViewModel(title: titleName, youTubeView: videoElement, titleOverview: title.overview ?? ""))
+                    let viewModel = TitlePreviewViewModel(title: titleName, youTubeView: videoElement, titleOverview: title.overview ?? "")
+                    titlePreview.configure(with: viewModel, title: title)
                     self?.navigationController?.pushViewController(titlePreview, animated: true)
                 }
             case .failure(let error):
@@ -114,6 +113,24 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
 }
 
 extension SearchViewController: UISearchResultsUpdating, SearchResultsViewControllerDelegate {
+    func searchResultsViewController(_ searchResultsViewController: SearchResultsViewController, didTapItem title: Title) {
+        let titleName = title.original_title ?? title.original_name ?? ""
+        
+        APICaller.shared.getMovie(with: titleName + " trailer") { result in
+            switch result {
+            case .success(let videoElement):
+                DispatchQueue.main.async {
+                    let titlePreview = TitlePreviewViewController()
+                    let viewModel = TitlePreviewViewModel(title: titleName, youTubeView: videoElement, titleOverview: title.overview ?? "")
+                    titlePreview.configure(with: viewModel, title: title)
+                    self.navigationController?.pushViewController(titlePreview, animated: true)
+                }
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
     func updateSearchResults(for searchController: UISearchController) {
         let searchBar = searchController.searchBar
         
@@ -133,14 +150,6 @@ extension SearchViewController: UISearchResultsUpdating, SearchResultsViewContro
                     print(error.localizedDescription)
                 }
             }
-        }
-    }
-    
-    func searchResultsViewControllerDidTapItem(_ viewModel: TitlePreviewViewModel) {
-        DispatchQueue.main.async { [weak self] in
-            let titlePreview = TitlePreviewViewController()
-            titlePreview.configure(with: viewModel)
-            self?.navigationController?.pushViewController(titlePreview, animated: true)
         }
     }
 }

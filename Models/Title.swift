@@ -22,3 +22,19 @@ struct Title: Codable {
     let release_date: String?
     let vote_average: Double
 }
+
+extension TitleItem {
+    func toTitle() -> Title {
+        return Title(
+            id: Int(self.id),
+            media_type: self.original_title,
+            original_name: self.poster_path,
+            original_title: self.overview,
+            poster_path: self.poster_path,
+            overview: self.original_name,
+            vote_count: Int(self.vote_count),
+            release_date: self.release_date,
+            vote_average: self.vote_average
+        )
+    }
+}

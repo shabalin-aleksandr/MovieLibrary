@@ -133,8 +133,6 @@ class APICaller {
     }
     
     func getMovie(with query: String, completion: @escaping (Result<VideoElement, Error>) -> Void) {
-        
-
         guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else {return}
         guard let url = URL(string: "\(Configuration.YouTubeBaseURLForSearch)q=\(query)&key=\(Configuration.YouTube_API_KEY)") else {return}
         let response = URLSession.shared.dataTask(with: URLRequest(url: url)) { data, _, error in

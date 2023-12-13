@@ -19,16 +19,12 @@ class DataPersistenceManager {
     
     static let shared = DataPersistenceManager()
     
-    
     func downloadTitleWith(model: Title, completion: @escaping (Result<Void, Error>) -> Void) {
-        
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
         }
         
-        
         let context = appDelegate.persistentContainer.viewContext
-        
         let item = TitleItem(context: context)
         
         item.original_title = model.original_title
@@ -41,7 +37,6 @@ class DataPersistenceManager {
         item.vote_count = Int64(model.vote_count)
         item.vote_average = model.vote_average
         
-        
         do {
             try context.save()
             completion(.success(()))
@@ -50,17 +45,13 @@ class DataPersistenceManager {
         }
     }
     
-    
     func fetchingTitlesFromDataBase(completion: @escaping (Result<[TitleItem], Error>) -> Void) {
-        
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
         }
         
         let context = appDelegate.persistentContainer.viewContext
-        
         let request: NSFetchRequest<TitleItem>
-        
         request = TitleItem.fetchRequest()
         
         do {
@@ -74,14 +65,11 @@ class DataPersistenceManager {
     }
     
     func deleteTitleWith(model: TitleItem, completion: @escaping (Result<Void, Error>)-> Void) {
-        
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
         }
-        
+
         let context = appDelegate.persistentContainer.viewContext
-        
-        
         context.delete(model)
         
         do {
@@ -90,6 +78,23 @@ class DataPersistenceManager {
         } catch {
             completion(.failure(DatabasError.failedToDeleteData))
         }
-        
+    }
+    
+    func isTitleDownloaded(with id: Int) -> Bool {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return false
+        }
+
+        let context = appDelegate.persistentContainer.viewContext
+        let request: NSFetchRequest<TitleItem> = TitleItem.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %d", id)
+
+        do {
+            let titles = try context.fetch(request)
+            return !titles.isEmpty
+        } catch {
+            print("Failed to fetch titles: \(error)")
+            return false
+        }
     }
 }
