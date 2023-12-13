@@ -136,7 +136,7 @@ class APICaller {
         
 
         guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else {return}
-        guard let url = URL(string: "\(Configuration.YouTubeBaseURL)q=\(query)&key=\(Configuration.YouTube_API_KEY)") else {return}
+        guard let url = URL(string: "\(Configuration.YouTubeBaseURLForSearch)q=\(query)&key=\(Configuration.YouTube_API_KEY)") else {return}
         let response = URLSession.shared.dataTask(with: URLRequest(url: url)) { data, _, error in
             guard let data = data, error == nil else {
                 return

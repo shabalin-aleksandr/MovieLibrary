@@ -27,10 +27,12 @@ class HomeViewController: UIViewController {
         table.register(CollectionViewTableViewCell.self, forCellReuseIdentifier: CollectionViewTableViewCell.identifier)
         return table
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        navigationController?.navigationBar.tintColor = .white
+        
         view.addSubview(homeFeadTable)
         homeFeadTable.delegate = self
         homeFeadTable.dataSource = self
@@ -55,20 +57,41 @@ class HomeViewController: UIViewController {
     }
     
     private func configureNavbar() {
-        var image = UIImage(named: "netflixLogo")
-        image = image?.withRenderingMode(.alwaysOriginal)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: image, style: .done, target: self, action: nil)
+        let imageView = UIImageView(image: UIImage(named: "appIcon"))
+        imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            imageView.widthAnchor.constraint(equalToConstant: 30),
+            imageView.heightAnchor.constraint(equalToConstant: 30)
+        ])
+        
+        let imageItem = UIBarButtonItem(customView: imageView)
+        navigationItem.leftBarButtonItem = imageItem
+        
         
         navigationItem.rightBarButtonItems = [
-            UIBarButtonItem(image: UIImage(systemName: "person"), style: .done, target: self, action: nil),
-            UIBarButtonItem(image: UIImage(systemName: "play.rectangle"), style: .done, target: self, action: nil)
+            UIBarButtonItem(image: UIImage(systemName: "person"), style: .done, target: self, action: #selector(personTapped)),
+            UIBarButtonItem(image: UIImage(systemName: "play.rectangle"), style: .done, target: self, action: #selector(playTapped))
         ]
         navigationController?.navigationBar.tintColor = .white
+    }
+    
+    @objc func personTapped() {
+        
+    }
+    
+    @objc func playTapped() {
+        let downloadsVC = DownloadsViewController()
+        navigationController?.pushViewController(downloadsVC, animated: true)
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         homeFeadTable.frame = view.bounds
+    }
+    
+    func scrollToTop() {
+        homeFeadTable.setContentOffset(.zero, animated: true)
     }
 }
 
@@ -90,7 +113,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
         cell.delegeate = self
-
+        
         switch indexPath.section {
         case Sections.TrendingMovies.rawValue:
             APICaller.shared.getTrendingMovies { result in
@@ -177,6 +200,7 @@ extension HomeViewController: CollectionViewTableViewCellDelegate {
         DispatchQueue.main.async { [weak self] in
             let titlePreview = TitlePreviewViewController()
             titlePreview.configure(with: viewModel)
+            self?.navigationController?.navigationBar.transform = .identity
             self?.navigationController?.pushViewController(titlePreview, animated: true)
         }
     }

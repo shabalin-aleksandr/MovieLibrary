@@ -42,6 +42,13 @@ struct Configuration {
         }
         return youTubeBaseURL
     }
+    
+    static var YouTubeBaseURLForSearch: String {
+        guard let youTubeBaseURL = getValue(forKey: "YouTubeBaseURLForSearch") else {
+            fatalError("YouTubeBaseURLForSearch not found in Config.plist")
+        }
+        return youTubeBaseURL
+    }
 
     private static func getValue(forKey key: String) -> String? {
         guard let path = Bundle.main.path(forResource: "Config", ofType: "plist"),

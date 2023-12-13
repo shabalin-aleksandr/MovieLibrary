@@ -57,7 +57,6 @@ class DownloadsViewController: UIViewController {
     }
 }
 
-
 extension DownloadsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return titles.count
