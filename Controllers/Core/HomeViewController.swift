@@ -70,8 +70,8 @@ class HomeViewController: UIViewController {
         
         
         navigationItem.rightBarButtonItems = [
-            UIBarButtonItem(image: UIImage(systemName: "person"), style: .done, target: self, action: #selector(personTapped)),
-            UIBarButtonItem(image: UIImage(systemName: "play.rectangle"), style: .done, target: self, action: #selector(playTapped))
+            UIBarButtonItem(image: UIImage(systemName: "person.circle"), style: .done, target: self, action: #selector(personTapped)),
+            UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .done, target: self, action: #selector(searchTapped))
         ]
         navigationController?.navigationBar.tintColor = .white
     }
@@ -80,9 +80,9 @@ class HomeViewController: UIViewController {
         
     }
     
-    @objc func playTapped() {
-        let downloadsVC = DownloadsViewController()
-        navigationController?.pushViewController(downloadsVC, animated: true)
+    @objc func searchTapped() {
+        let searchVC = SearchViewController()
+        navigationController?.pushViewController(searchVC, animated: true)
     }
     
     override func viewDidLayoutSubviews() {

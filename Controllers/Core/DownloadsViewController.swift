@@ -13,17 +13,27 @@ class DownloadsViewController: UIViewController {
     private var titles: [TitleItem] = [TitleItem]()
     
     private let downloadedTable: UITableView = {
-       
         let table = UITableView()
         table.register(TitleTableViewCell.self, forCellReuseIdentifier: TitleTableViewCell.identifier)
         return table
     }()
-
+    
+    private let noDownloadsLabel: UILabel = {
+        let label = UILabel()
+        label.text = "You haven't downloaded any movies yet."
+        label.textAlignment = .center
+        label.textColor = .secondaryLabel
+        label.font = UIFont.systemFont(ofSize: 18, weight: .medium)
+        label.isHidden = true
+        return label
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         title = "Downloads"
         view.addSubview(downloadedTable)
+        view.addSubview(noDownloadsLabel)
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationItem.largeTitleDisplayMode = .always
         navigationController?.navigationBar.tintColor = .white
@@ -42,6 +52,9 @@ class DownloadsViewController: UIViewController {
             case .success(let titles):
                 self?.titles = titles
                 DispatchQueue.main.async {
+                    // Hide the label if there are titles, show the table if there are titles
+                    self?.noDownloadsLabel.isHidden = !titles.isEmpty
+                    self?.downloadedTable.isHidden = titles.isEmpty
                     self?.downloadedTable.reloadData()
                 }
             case .failure(let error):
@@ -49,17 +62,20 @@ class DownloadsViewController: UIViewController {
             }
         }
     }
+
     
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         downloadedTable.frame = view.bounds
+        let labelHeight: CGFloat = 200
+        noDownloadsLabel.frame = CGRect(x: 20, y: (view.bounds.height - labelHeight) / 2, width: view.bounds.width - 40, height: labelHeight)
     }
 }
 
 extension DownloadsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return titles.count
+        return titles.isEmpty ? 0 : titles.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -79,20 +95,24 @@ extension DownloadsViewController: UITableViewDelegate, UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        switch editingStyle {
-        case .delete:
+        if editingStyle == .delete {
             DataPersistenceManager.shared.deleteTitleWith(model: titles[indexPath.row]) { [weak self] result in
                 switch result {
                 case .success():
-                    print("Deleted fromt the database")
+                    print("Deleted from the database")
+                    DispatchQueue.main.async {
+                        self?.titles.remove(at: indexPath.row)
+                        tableView.deleteRows(at: [indexPath], with: .fade)
+                        
+                        if self?.titles.isEmpty ?? true {
+                            self?.downloadedTable.isHidden = true
+                            self?.noDownloadsLabel.isHidden = false
+                        }
+                    }
                 case .failure(let error):
                     print(error.localizedDescription)
                 }
-                self?.titles.remove(at: indexPath.row)
-                tableView.deleteRows(at: [indexPath], with: .fade)
             }
-        default:
-            break;
         }
     }
     

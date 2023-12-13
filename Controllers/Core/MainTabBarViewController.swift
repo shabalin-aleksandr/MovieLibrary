@@ -17,23 +17,20 @@ class MainTabBarViewController: UITabBarController, UITabBarControllerDelegate {
         
         let homeElement = UINavigationController(rootViewController: HomeViewController())
         let upcomingElement = UINavigationController(rootViewController: UpcomingViewController())
-        let searchElement = UINavigationController(rootViewController: SearchViewController())
         let downloadElement = UINavigationController(rootViewController: DownloadsViewController())
         
         
         homeElement.tabBarItem.image = UIImage(systemName: "house")
         upcomingElement.tabBarItem.image = UIImage(systemName: "play.circle")
-        searchElement.tabBarItem.image = UIImage(systemName: "magnifyingglass")
         downloadElement.tabBarItem.image = UIImage(systemName: "arrow.down.to.line")
         
         homeElement.title = "Home"
         upcomingElement.title = "Coming Soon"
-        searchElement.title = "Top Search"
         downloadElement.title = "Downloads"
         
         tabBar.tintColor = .label
         
-        setViewControllers([homeElement, upcomingElement, searchElement, downloadElement], animated: true)
+        setViewControllers([homeElement, upcomingElement, downloadElement], animated: true)
     }
     
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {

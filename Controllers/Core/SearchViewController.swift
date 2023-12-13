@@ -61,6 +61,14 @@ class SearchViewController: UIViewController {
         super.viewDidLayoutSubviews()
         discoverTable.frame = view.bounds
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        searchControler.isActive = true
+        DispatchQueue.main.async { [weak self] in
+            self?.searchControler.searchBar.becomeFirstResponder()
+        }
+    }
 }
 
 extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
