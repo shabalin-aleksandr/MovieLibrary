@@ -14,6 +14,8 @@ class ProfileViewController: UIViewController {
     private let nicknameLabel = UILabel()
     private let emailLabel = UILabel()
     
+    private let scrollView = UIScrollView()
+    
     private let nameTextField = UITextField()
     private let surnameTextField = UITextField()
     private let nicknameTextField = UITextField()
@@ -23,6 +25,8 @@ class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        
+        view.addSubview(scrollView)
         
         setupLabel(nameLabel, text: "Name")
         setupLabel(surnameLabel, text: "Surname")
@@ -34,8 +38,13 @@ class ProfileViewController: UIViewController {
         setupTextField(nicknameTextField, placeholder: "Nickname", autoCapitalization: .none)
         setupTextField(emailTextField, placeholder: "Email", autoCapitalization: .none)
         
-        setupSaveButton()
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
+        
+        setupSaveButton()
         loadProfile()
     }
     
@@ -51,7 +60,7 @@ class ProfileViewController: UIViewController {
         textField.autocapitalizationType = autoCapitalization
         view.addSubview(textField)
     }
-
+    
     
     private func setupSaveButton() {
         saveButton.setTitle("Save", for: .normal)
@@ -73,16 +82,38 @@ class ProfileViewController: UIViewController {
         UserDefaults.standard.set(try? PropertyListEncoder().encode(profile), forKey: "userProfile")
     }
     
+    @objc private func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            let bottomInset = keyboardSize.height - view.safeAreaInsets.bottom
+            scrollView.contentInset.bottom = bottomInset
+            scrollView.verticalScrollIndicatorInsets.bottom = bottomInset
+        }
+    }
+
+    @objc private func keyboardWillHide(notification: NSNotification) {
+        scrollView.contentInset.bottom = 0
+        scrollView.verticalScrollIndicatorInsets.bottom = 0
+    }
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
     private func animateButtonTap(_ button: UIButton) {
         UIView.animate(withDuration: 0.1,
                        animations: {
-                         button.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
-                       },
+            button.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+        },
                        completion: { _ in
-                         UIView.animate(withDuration: 0.1) {
-                             button.transform = CGAffineTransform.identity
-                         }
-                       })
+            UIView.animate(withDuration: 0.1) {
+                button.transform = CGAffineTransform.identity
+            }
+        })
     }
     
     private func loadProfile() {
@@ -97,6 +128,11 @@ class ProfileViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        scrollView.frame = view.bounds
+        let contentWidth = view.frame.size.width
+        let contentHeight = saveButton.frame.origin.y + saveButton.frame.size.height + 20
+        scrollView.contentSize = CGSize(width: contentWidth, height: contentHeight)
         
         let spacing: CGFloat = 50
         let labelHeight: CGFloat = 20
