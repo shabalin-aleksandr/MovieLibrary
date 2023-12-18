@@ -109,7 +109,8 @@ class HomeViewController: UIViewController {
     }
     
     @objc func personTapped() {
-        
+        let profileVC = ProfileViewController()
+        navigationController?.pushViewController(profileVC, animated: true)
     }
     
     @objc func searchTapped() {

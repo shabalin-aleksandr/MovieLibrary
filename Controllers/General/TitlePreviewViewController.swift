@@ -16,8 +16,12 @@ class TitlePreviewViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 22, weight: .bold)
+        label.textColor = .white
+        label.numberOfLines = 0
+        label.lineBreakMode = .byTruncatingTail
         return label
     }()
+
     
     private let overviewLabel: UILabel = {
         let label = UILabel()
@@ -102,9 +106,10 @@ class TitlePreviewViewController: UIViewController {
         
         let titleLabelConstraints = [
             titleLabel.topAnchor.constraint(equalTo: webView.bottomAnchor, constant: 20),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20)
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
         ]
-        
+
         let overviewLabelConstraints = [
             overviewLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 15),
             overviewLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
