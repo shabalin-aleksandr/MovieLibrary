@@ -15,6 +15,7 @@ class TitleTableViewCell: UITableViewCell {
         let button = UIButton()
         let image = UIImage(systemName: "play.circle", withConfiguration: UIImage.SymbolConfiguration(pointSize: 30))
         button.setImage(image, for: .normal)
+        button.imageView?.contentMode = .scaleAspectFit
         button.translatesAutoresizingMaskIntoConstraints = false
         button.tintColor = .white
         return button
@@ -23,8 +24,11 @@ class TitleTableViewCell: UITableViewCell {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
         return label
     }()
+
     
     private let titlePosterUIImageView: UIImageView = {
         let imageView = UIImageView()
@@ -53,14 +57,17 @@ class TitleTableViewCell: UITableViewCell {
         
         let titleLabelConstraints = [
             titleLabel.leadingAnchor.constraint(equalTo: titlePosterUIImageView.trailingAnchor, constant: 20),
+            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: playTitleButton.leadingAnchor, constant: -20),
             titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ]
-        
+
         let playTitleButtonConstraints = [
             playTitleButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            playTitleButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+            playTitleButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            playTitleButton.widthAnchor.constraint(equalToConstant: 44),
+            playTitleButton.heightAnchor.constraint(equalToConstant: 44)
         ]
-        
+
         NSLayoutConstraint.activate(titlePosterUIImageViewViewConstraints)
         NSLayoutConstraint.activate(titleLabelConstraints)
         NSLayoutConstraint.activate(playTitleButtonConstraints)

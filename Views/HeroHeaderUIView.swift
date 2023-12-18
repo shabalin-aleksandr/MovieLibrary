@@ -12,7 +12,7 @@ class HeroHeaderUIView: UIView {
     var onPreviewButtonTapped: (() -> Void)?
     var onDownloadButtonTapped: (() -> Void)?
     
-    private let playButton: UIButton = {
+    private let previewButton: UIButton = {
         
         let button = UIButton()
         button.setTitle("Preview", for: .normal)
@@ -55,17 +55,17 @@ class HeroHeaderUIView: UIView {
         super.init(frame: frame)
         addSubview(heroImageView)
         addGradient()
-        addSubview(playButton)
+        addSubview(previewButton)
         addSubview(downloadButton)
         
-        playButton.addTarget(self, action: #selector(playButtonTapped), for: .touchUpInside)
+        previewButton.addTarget(self, action: #selector(playButtonTapped), for: .touchUpInside)
         downloadButton.addTarget(self, action: #selector(downloadButtonTapped), for: .touchUpInside)
         
         applyConstraints()
     }
     
     @objc private func playButtonTapped() {
-        animateButtonTap(playButton)
+        animateButtonTap(previewButton)
         onPreviewButtonTapped?()
     }
 
@@ -90,9 +90,9 @@ class HeroHeaderUIView: UIView {
     private func applyConstraints() {
         
         let playButtonConstrains = [
-            playButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 70),
-            playButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -50),
-            playButton.widthAnchor.constraint(equalToConstant: 120)
+            previewButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 70),
+            previewButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -50),
+            previewButton.widthAnchor.constraint(equalToConstant: 120)
         ]
         
         let downloadButtonConstrains = [
