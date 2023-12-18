@@ -50,11 +50,43 @@ class HomeViewController: UIViewController {
                 let selectedTitle = titles.randomElement()
                 self?.randomTrendingMovie = selectedTitle
                 self?.headerView?.configure(with: TitleViewModel(titleName: selectedTitle?.original_title ?? "", posterURL: selectedTitle?.poster_path ?? ""))
+                self?.headerView?.onPreviewButtonTapped = {
+                    guard let title = self?.randomTrendingMovie else { return }
+                    APICaller.shared.getMovie(with: title.original_title ?? "") { [weak self] result in
+                        switch result {
+                        case .success(let videoElement):
+                            DispatchQueue.main.async {
+                                let titlePreviewViewModel = TitlePreviewViewModel(
+                                    title: title.original_title ?? "",
+                                    youTubeView: videoElement,
+                                    titleOverview: title.overview ?? ""
+                                )
+                                let titlePreviewVC = TitlePreviewViewController()
+                                titlePreviewVC.configure(with: titlePreviewViewModel, title: title)
+                                self?.navigationController?.pushViewController(titlePreviewVC, animated: true)
+                            }
+                        case .failure(let error):
+                            print("Error fetching YouTube video: \(error)")
+                        }
+                    }
+                }
+                self?.headerView?.onDownloadButtonTapped = {
+                    guard let title = self?.randomTrendingMovie else { return }
+                    DataPersistenceManager.shared.downloadTitleWith(model: title) { result in
+                        switch result {
+                        case .success():
+                            NotificationCenter.default.post(name: NSNotification.Name("downloaded"), object: nil)
+                        case .failure(let error):
+                            print("Failed to download: \(error.localizedDescription)")
+                        }
+                    }
+                }
             case .failure(let error):
                 print(error.localizedDescription)
             }
         }
     }
+
     
     private func configureNavbar() {
         let imageView = UIImageView(image: UIImage(named: "appIcon"))

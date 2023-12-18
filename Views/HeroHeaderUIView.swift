@@ -9,10 +9,13 @@ import UIKit
 
 class HeroHeaderUIView: UIView {
     
+    var onPreviewButtonTapped: (() -> Void)?
+    var onDownloadButtonTapped: (() -> Void)?
+    
     private let playButton: UIButton = {
-       
+        
         let button = UIButton()
-        button.setTitle("Play", for: .normal)
+        button.setTitle("Preview", for: .normal)
         button.layer.borderColor = UIColor.white.cgColor
         button.layer.borderWidth = 1
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -54,8 +57,35 @@ class HeroHeaderUIView: UIView {
         addGradient()
         addSubview(playButton)
         addSubview(downloadButton)
+        
+        playButton.addTarget(self, action: #selector(playButtonTapped), for: .touchUpInside)
+        downloadButton.addTarget(self, action: #selector(downloadButtonTapped), for: .touchUpInside)
+        
         applyConstraints()
     }
+    
+    @objc private func playButtonTapped() {
+        animateButtonTap(playButton)
+        onPreviewButtonTapped?()
+    }
+
+    @objc private func downloadButtonTapped() {
+        animateButtonTap(downloadButton)
+        onDownloadButtonTapped?()
+    }
+    
+    private func animateButtonTap(_ button: UIButton) {
+        UIView.animate(withDuration: 0.1,
+                       animations: {
+                         button.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+                       },
+                       completion: { _ in
+                         UIView.animate(withDuration: 0.1) {
+                             button.transform = CGAffineTransform.identity
+                         }
+                       })
+    }
+
     
     private func applyConstraints() {
         
