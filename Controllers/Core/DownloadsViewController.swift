@@ -118,7 +118,7 @@ extension DownloadsViewController: UITableViewDelegate, UITableViewDataSource {
         tableView.deselectRow(at: indexPath, animated: true)
         
         let titleItem = titles[indexPath.row]
-        let title = titleItem.toTitle()  // Convert TitleItem to Title
+        let title = titleItem.toTitle()
         
         guard let titleName = titleItem.original_title ?? titleItem.original_name else {
             return
